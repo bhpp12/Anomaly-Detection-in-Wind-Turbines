@@ -1,136 +1,137 @@
-# Detecção de Anomalias em Turbinas Eólicas
+# Anomaly Detection in Wind Turbines
 
-## Sobre o projeto
+## About the Project
 
-Projeto desenvolvido para a disciplina de **Mineração de Dados da Universidade Federal do Ceará (UFC)**, com o objetivo de identificar anomalias em dados de telemetria de turbinas eólicas.
+This project was developed for the **Data Mining course at the Federal University of Ceará (UFC)**, with the goal of identifying anomalies in wind turbine telemetry data.
 
-A proposta consiste em analisar informações operacionais das turbinas, identificar comportamentos atípicos e selecionar um método de Machine Learning para gerar, no máximo, 300 alertas de possíveis anomalias.
+The objective is to analyze turbine operational data, identify unusual behavior, and select a Machine Learning method capable of generating a maximum of 300 potential anomaly alerts.
 
-O desenvolvimento foi realizado no Google Colab, utilizando técnicas de análise exploratória, métodos estatísticos e algoritmos não supervisionados de detecção de anomalias.
+The project was developed using **Python in Google Colab**, applying exploratory data analysis, statistical methods, and unsupervised anomaly detection algorithms.
 
-## Tecnologias e bibliotecas
+## Technologies and Libraries
 
 - Python
 - Google Colab
-- Pandas e NumPy
+- Pandas and NumPy
 - Matplotlib
 - Scikit-learn
 - SciPy
 
-## Dados utilizados
+## Dataset
 
-O dataset contém informações de telemetria das turbinas eólicas, incluindo:
+The dataset contains telemetry information from wind turbines, including:
 
-| Variável | Descrição |
+| Variable | Description |
 |---|---|
-| `id` | Identificador do registro. |
-| `timestamp` | Data e horário da leitura. |
-| `turbina` | Identificação da turbina. |
-| `vento_ms` | Velocidade do vento (m/s). |
-| `potencia_kw` | Potência gerada (kW). |
-| `rotor_rpm` | Rotação do rotor. |
-| `temp_caixa_engrenagem_c` | Temperatura da caixa de engrenagem (°C). |
-| `vibracao_mm_s` | Vibração (mm/s). |
-| `temp_ambiente_c` | Temperatura ambiente (°C). |
+| `id` | Record identifier. |
+| `timestamp` | Date and time of the reading. |
+| `turbina` | Turbine identifier. |
+| `vento_ms` | Wind speed (m/s). |
+| `potencia_kw` | Generated power (kW). |
+| `rotor_rpm` | Rotor rotational speed. |
+| `temp_caixa_engrenagem_c` | Gearbox temperature (°C). |
+| `vibracao_mm_s` | Vibration (mm/s). |
+| `temp_ambiente_c` | Ambient temperature (°C). |
 
-## Desenvolvimento
+## Development Process
 
-### 1. Análise exploratória dos dados
+### 1. Exploratory Data Analysis (EDA)
 
-Inicialmente, foi realizada uma análise das variáveis de telemetria, utilizando gráficos de dispersão e séries temporais para investigar relações entre velocidade do vento, potência gerada e temperatura dos componentes.
+Initially, an exploratory analysis of the telemetry variables was performed using scatter plots and time series to investigate relationships between wind speed, generated power, and component temperatures.
 
-### 2. Detecção estatística de anomalias
+### 2. Statistical Anomaly Detection
 
-Foram utilizados dois métodos estatísticos como baseline:
+Two statistical methods were used as baselines:
 
-- **Z-Score:** identifica observações que apresentam valores distantes da média, considerando o desvio padrão.
-- **IQR (Intervalo Interquartil):** identifica valores fora dos limites definidos pelos quartis da distribuição.
+- **Z-Score:** Identifies observations with values significantly distant from the mean, considering the standard deviation.
+- **IQR (Interquartile Range):** Identifies values outside the boundaries defined by the distribution quartiles.
 
-Resultados:
-- Z-Score: 87 alertas.
-- IQR: 100 alertas.
+Results:
 
-Esses métodos apresentam limitações na identificação de anomalias contextuais e multivariadas, pois analisam os valores de maneira independente.
+- Z-Score: 87 alerts.
+- IQR: 100 alerts.
 
-### 3. Engenharia de atributos (Feature Engineering)
+These methods have limitations when identifying contextual and multivariate anomalies because they analyze individual variable values independently.
 
-Foram criadas duas novas variáveis para melhorar a identificação de comportamentos anormais:
+### 3. Feature Engineering
 
-- `vento_std_1h`: desvio padrão da velocidade do vento em uma janela móvel de uma hora, considerando seis leituras.
-- `vib_congelada`: identifica possíveis sensores de vibração congelados, com valores constantes durante uma hora.
+Two new features were created to improve the identification of abnormal behavior:
 
-Também foi aplicada a normalização dos dados utilizando `StandardScaler`, preparando as variáveis para os algoritmos de detecção de anomalias.
+- `vento_std_1h`: Standard deviation of wind speed within a one-hour rolling window, considering six readings.
+- `vib_congelada`: Identifies potential frozen vibration sensors by detecting constant values over a one-hour period.
 
-### 4. Modelos de Machine Learning
+Data normalization was also performed using `StandardScaler`, preparing the features for the anomaly detection algorithms.
 
-Foram implementados quatro algoritmos não supervisionados:
+### 4. Machine Learning Models
+
+Four unsupervised learning algorithms were implemented:
 
 **Isolation Forest**
 
-Identifica anomalias por meio de processos de isolamento, atribuindo pontuações maiores às observações consideradas mais anormais.
+Identifies anomalies through isolation processes, assigning higher anomaly scores to observations considered more unusual.
 
 **k-Nearest Neighbors (k-NN)**
 
-Utiliza a distância média entre cada observação e seus 10 vizinhos mais próximos para identificar registros isolados.
+Uses the average distance between each observation and its 10 nearest neighbors to identify isolated records.
 
 **Local Outlier Factor (LOF)**
 
-Analisa a densidade local das observações em comparação com seus vizinhos para identificar possíveis anomalias.
+Analyzes the local density of observations compared to their neighbors to identify potential anomalies.
 
 **One-Class SVM**
 
-Utiliza uma função de decisão para identificar observações que se afastam do comportamento considerado normal.
+Uses a decision function to identify observations that deviate from the expected normal behavior.
 
-Cada algoritmo foi utilizado para selecionar as 300 observações com maiores pontuações de anomalia.
+Each algorithm was used to select the 300 observations with the highest anomaly scores.
 
-### 5. Comparação dos resultados
+### 5. Results Comparison
 
-Os quatro modelos produziram 300 alertas cada.
+All four models generated 300 alerts each.
 
-Também foram analisadas as intersecções entre os conjuntos de alertas para identificar registros apontados simultaneamente por diferentes algoritmos.
+The intersections between the alert sets were also analyzed to identify records simultaneously flagged by different algorithms.
 
-| Comparação | Alertas em comum |
+| Comparison | Common Alerts |
 |---|---:|
-| Isolation Forest e LOF | 99 |
-| Isolation Forest e k-NN | 132 |
-| Isolation Forest e One-Class SVM | 160 |
-| LOF e k-NN | 152 |
+| Isolation Forest and LOF | 99 |
+| Isolation Forest and k-NN | 132 |
+| Isolation Forest and One-Class SVM | 160 |
+| LOF and k-NN | 152 |
 
-### 6. Diagnóstico das anomalias
+### 6. Anomaly Diagnosis
 
-Foi realizada uma análise dos três alertas mais críticos identificados pelo Isolation Forest.
+An analysis was conducted on the three most critical alerts identified by Isolation Forest.
 
-Os registros apresentaram características como:
+The records presented characteristics such as:
 
-- Velocidade do vento entre 2,5 e 2,8 m/s.
-- Potência variando entre 0 e 53 kW.
-- Rotor em movimento, mesmo com baixa velocidade do vento.
-- Temperatura da caixa de engrenagem acima de 40 °C.
+- Wind speed ranging from 2.5 to 2.8 m/s.
+- Generated power ranging from 0 to 53 kW.
+- Rotor movement despite low wind speed.
+- Gearbox temperature above 40 °C.
 
-Esse comportamento pode indicar uma anomalia contextual relacionada ao aquecimento da caixa de engrenagem em condições de baixa geração, levantando hipóteses como falhas na refrigeração ou atrito mecânico.
+This behavior may indicate a contextual anomaly related to gearbox overheating under low power generation conditions, raising hypotheses such as cooling system failures or mechanical friction.
 
-## Decisão para produção
+## Production Decision
 
-**Método selecionado: Isolation Forest.**
+**Selected Method: Isolation Forest.**
 
-A escolha foi baseada em três fatores principais:
+The selection was based on three main factors:
 
-1. **Limite de alertas:** permite priorizar as 300 observações mais anômalas, respeitando a capacidade de investigação disponível.
-2. **Desempenho computacional:** apresenta boa escalabilidade em comparação com métodos baseados em cálculos de distância entre observações.
-3. **Detecção multivariada:** permite identificar combinações atípicas entre variáveis, incluindo anomalias contextuais que métodos estatísticos univariados podem não detectar.
+1. **Alert Limit:** Allows prioritization of the 300 most anomalous observations, respecting the available investigation capacity.
+2. **Computational Performance:** Offers good scalability compared to methods based on distance calculations between observations.
+3. **Multivariate Detection:** Can identify unusual combinations of features, including contextual anomalies that univariate statistical methods may fail to detect.
 
-## Exportação dos resultados
+## Results Export
 
-Ao final, os 300 registros selecionados pelo Isolation Forest são exportados para um arquivo CSV contendo os identificadores das observações:
+Finally, the 300 observations selected by Isolation Forest are exported to a CSV file containing the identifiers of the flagged records:
 
 `alertas_equipe_bhpp.csv`
 
-Também são exibidos os três alertas considerados mais críticos para auxiliar no diagnóstico.
+The three most critical alerts are also displayed to support further investigation and diagnosis.
 
-## Autor
+## Author
 
 **Bruno Henrique Pacheco Prudêncio**
 
-Estudante de Ciência de Dados — Universidade Federal do Ceará (UFC).
+Data Science Student — Federal University of Ceará (UFC).
 
 [GitHub](https://github.com/bhpp12)
